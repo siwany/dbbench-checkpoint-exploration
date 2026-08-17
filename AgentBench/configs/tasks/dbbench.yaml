@@ -1,0 +1,108 @@
+default:
+  module: src.server.tasks.dbbench.DBBenchTask
+  parameters:
+    concurrency: 32
+    max_round: 15
+    mode: no_exploration
+
+    tools:
+      - type: "function"
+        function:
+          name: "execute_sql"
+          description: "Executes a given SQL statement on the database and returns the result."
+          parameters:
+            type: "object"
+            properties:
+              query:
+                type: "string"
+                description: "The SQL query to be executed."
+            required:
+              - "query"
+            additionalProperties: False
+      - type: "function"
+        function:
+          name: "commit_final_answer"
+          description: "Commits the final answer after all operations are completed."
+          parameters:
+            type: "object"
+            properties:
+              answers:
+                type: "array"
+                items:
+                  type: "string"
+                description: "The list of final answers to commit."
+            required:
+              - "answers"
+            additionalProperties: False
+
+    env_driver: docker
+    env_options:
+      network_name: agentbench-fc_default
+      state_driver: redis
+      state_options:
+        connection:
+          host: redis
+
+dbbench-std:
+  parameters:
+    name: dbbench-std
+    data_file: "data/dbbench/standard.jsonl"
+
+dbbench-env_train:
+  parameters:
+    name: dbbench-env_train
+    data_file: "data/dbbench/db_out_new.jsonl"
+    db_file: "data/dbbench/db_train"
+
+dbbench-dev-mod-noexplore:
+  parameters:
+    name: dbbench-dev-mod-noexplore
+    data_file: "data/dbbench/dev_modification.jsonl"
+
+dbbench-dev-mod-checkpoint:
+  parameters:
+    name: dbbench-dev-mod-checkpoint
+    mode: checkpoint
+    data_file: "data/dbbench/dev_modification.jsonl"
+    tools:
+      - type: "function"
+        function:
+          name: "execute_sql"
+          description: "Executes one SQL statement. Before INSERT, UPDATE, or DELETE, the environment automatically creates a SAVEPOINT."
+          parameters:
+            type: "object"
+            properties:
+              query:
+                type: "string"
+                description: "The SQL query to be executed."
+            required:
+              - "query"
+            additionalProperties: False
+      - type: "function"
+        function:
+          name: "restore_checkpoint"
+          description: "Restores the most recent checkpoint and records why the tentative modification was rejected."
+          parameters:
+            type: "object"
+            properties:
+              reason:
+                type: "string"
+                description: "Why the most recent modification was incorrect and what should change in the next attempt."
+            required:
+              - "reason"
+            additionalProperties: False
+      - type: "function"
+        function:
+          name: "commit_final_answer"
+          description: "Commits all accepted database changes and submits the final answer."
+          parameters:
+            type: "object"
+            properties:
+              answers:
+                type: "array"
+                items:
+                  type: "string"
+                description: "The list of final answers to commit."
+            required:
+              - "answers"
+            additionalProperties: False

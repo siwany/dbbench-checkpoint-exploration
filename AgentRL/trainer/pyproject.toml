@@ -1,0 +1,75 @@
+[build-system]
+requires = [
+  "setuptools>=80",
+  "setuptools-scm>=8"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentrl-trainer"
+description = "Traning framework of AgentRL: Scaling Agentic Reinforcement Learning with a Multi-Turn, Multi-Task Framework"
+requires-python = ">=3.10"
+license = "MIT"
+classifiers = [
+  "Environment :: GPU :: NVIDIA CUDA",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Typing :: Typed"
+]
+dynamic = ["version"]
+
+dependencies = [
+  "accelerate",
+  "aiohttp",
+  "binpacking",
+  "filelock",
+  "flash-attn>=2.4.3",
+  "numpy",
+  "Pillow",
+  "PyYAML",
+  "ray[rllib]",
+  "requests",
+  "tensordict",
+  "torch>=2.6.0",
+  "transformers",
+  "wandb"
+]
+
+[project.optional-dependencies]
+sglang = [
+  "sglang[all]>=0.4.8"
+]
+vllm = [
+  "vllm>=0.11.2"
+]
+megatron = [
+  "megatron-core",
+  "transformer-engine[pytorch]",
+  # as required by transformer-engine
+  # https://github.com/NVIDIA/TransformerEngine/blob/main/transformer_engine/pytorch/attention/dot_product_attention/utils.py#L118
+  "flash-attn<=2.8.3"
+]
+
+[project.readme]
+text = "See the [main README](https://github.com/THUDM/AgentRL/blob/main/README.md#training-overview) for full docs."
+content-type = "text/markdown"
+
+[project.urls]
+Repository = "https://github.com/THUDM/AgentRL"
+Issues = "https://github.com/THUDM/AgentRL/issues"
+
+[tool.setuptools]
+include-package-data = true
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools_scm]
+root = ".."
+version_scheme = "guess-next-dev"
+local_scheme = "node-and-date"
+version_file = "src/agentrl/trainer/_version.py"
+tag_regex = "^trainer-v?(?P<version>.+)$"
+git_describe_command = ["git", "describe", "--dirty", "--tags", "--long", "--match", "trainer-v?*"]
+fallback_version = "0.0.0"

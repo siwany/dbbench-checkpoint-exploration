@@ -28,10 +28,11 @@ Verify that the controller is running:
 ```
 curl -X POST http://127.0.0.1:5020/api/sync_all
 ```
+You should be able to see `null`.
 
 
 Next, return to the project root and enter the AgentRL directory. Follow its README to install the required dependencies, then set your OpenAI API key.
-You can either do
+
 #### Option 1. Export the API Key
 
 This sets the key for the current terminal session:
@@ -41,13 +42,12 @@ cd ../AgentRL
 export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 ```
 
-#### Optin 2. Use an `.env` file
+#### Option 2. Use an `.env` file
 
 Create an `.env` file inside the `AgentRL` directory:
 
 ```
-OPENAI_API_KEY=YOUR_OPENAI_API_KEY # GPT Models
-OPENROUTER_API_KEY=YOUR_OPENROUTER_API_KEY # Qwen Models
+OPENAI_API_KEY=YOUR_OPENAI_API_KEY
 ```
 
 Load the variables before running the evaluation:
@@ -75,31 +75,31 @@ docker compose -f extra/docker-compose.yml run --rm \
   dbbench-std \
   --controller http://controller:5020/api \
   dbbench-dev-mod-noexplore
-
 ```
 
 Open a second terminal and run the evaluation client:
 
 ```
-
 conda activate agent-bench
 cd AgentRL
 
 python examples/eval/server_agent.py \
   --mode no_exploration \
-  -m gpt-5 \
+  -m <MODEL NAME> \
   -u https://api.openai.com/v1 \
   -c http://127.0.0.1:5020/api \
   -t 1.0 \
   -j 1 \
   -n 1 \
-  -o results/noexplore-full-gpt-5 \
+  -o results/noexplore-full \
   dbbench-dev-mod-noexplore
 ```
 * `-m`: Model name
+  * [Model List](AgentBench/configs/agents/api_agents.yaml)
 * `-u`: API base URL
 * `-c`: AgentBench controller API address
-* `-t`: Model temperature (default: 0.8)
+* `-t`: Model temperature (default: 0.8) 
+  * Some reasoning models, including GPT-5 and o-series models, do not support custom temperature values; use the default value of 1.0 or omit this parameter for those models.
 * `-j`: Number of tasks to run simulataneously
 * `-n`: Number of runs per task
 * `-o`: Evaluation trajectories directoy
@@ -126,10 +126,10 @@ cd AgentRL
 
 python examples/eval/server_agent.py \
   --mode checkpoint \
-  -m gpt-4o \
+  -m <MODEL NAME> \
   -u https://api.openai.com/v1 \
   -c http://127.0.0.1:5020/api \
-  -t 0 \
+  -t 1 \
   -j 1 \
   -n 1 \
   -o results/checkpoint-full \

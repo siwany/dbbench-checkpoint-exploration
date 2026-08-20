@@ -1,3 +1,4 @@
+# GPT
 gpt-3.5-turbo-0613:
     import: "./openai-chat.yaml"
     parameters:
@@ -14,13 +15,21 @@ gpt-4o:
             model: "gpt-4o"
             max_tokens: 2048
 
-gpt-4o-mini:
+o4-mini:
     import: "./openai-chat.yaml"
     parameters:
-        name: "gpt-4o-mini"
+        name: "o4-mini"
         body:
-            model: "gpt-4o-mini"
-            max_tokens: 2048
+            model: "o4-mini"
+            max_completion_tokens: 4096
+
+gpt-5:
+    import: "./openai-chat.yaml"
+    parameters:
+        name: "gpt-5"
+        body:
+            model: "gpt-5"
+            max_completion_tokens: 4096
 
 text-davinci-003:
     import: "./openai-text.yaml"

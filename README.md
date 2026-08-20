@@ -85,7 +85,7 @@ cd AgentRL
 
 python examples/eval/server_agent.py \
   --mode no_exploration \
-  -m <MODEL NAME> \
+  -m gpt-4o \
   -u https://api.openai.com/v1 \
   -c http://127.0.0.1:5020/api \
   -t 1.0 \
@@ -98,11 +98,12 @@ python examples/eval/server_agent.py \
   * [Model List](AgentBench/configs/agents/api_agents.yaml)
 * `-u`: API base URL
 * `-c`: AgentBench controller API address
-* `-t`: Model temperature (default: 0.8) 
-  * Some reasoning models, including GPT-5 and o-series models, do not support custom temperature values; use the default value of 1.0 or omit this parameter for those models.
-* `-j`: Number of tasks to run simulataneously
+* `-t`: Model temperature
+  * Use `-t 0` for GPT-4o and GPT-4o-mini.
+  * Use `-t 1` for GPT-5 and o-series models, which do not support custom temperature values.
+* `-j`: Number of tasks to run simultaneously
 * `-n`: Number of runs per task
-* `-o`: Evaluation trajectories directoy
+* `-o`: Evaluation trajectories directory
 * `dbbench-dev-mod-noexplore`: DBBench task configuration to run (Available task configurations are defined in `AgentBench/configs/tasks/dbbench.yaml`.)
 
 ## 4. Run Checkpointed Exploration
@@ -126,7 +127,7 @@ cd AgentRL
 
 python examples/eval/server_agent.py \
   --mode checkpoint \
-  -m <MODEL NAME> \
+  -m gpt-4o \
   -u https://api.openai.com/v1 \
   -c http://127.0.0.1:5020/api \
   -t 1 \
@@ -163,12 +164,13 @@ python examples/eval/analyze_dbbench.py \
 
 ## 6. Rerun an Experiment
 
-Before rerunning an experiment, stop the existing task worker. 
-If a worker container remains after an interrupted run, remove it manually:
+Stop the task worker with `Ctrl+C`. Because the worker was started with
+`--rm`, Docker should remove it automatically. If containers remain after
+an interrupted run, clean them up with:
 
 ```
-docker rm -f dbbench-noexplore-worker 2>/dev/null || true
-docker rm -f dbbench-checkpoint-worker 2>/dev/null || true
+cd AgentBench
+docker compose -f extra/docker-compose.yml down --remove-orphans
 ```
 
 ## 7. Stop the Environment

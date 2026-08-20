@@ -46,7 +46,7 @@ class OpenAIAgent:
             "tool_choice": "auto",
             "tools": tools,
             "temperature": temperature,
-            "max_completion_tokens": 1024,
+            "max_completion_tokens": 4096 if model.startswith("gpt-5") else 1024,
         }
         response = await self.client_session.post(url + "/chat/completions", json=payload, headers={
             "Authorization": "Bearer " + self.api_key,
